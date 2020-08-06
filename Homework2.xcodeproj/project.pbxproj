@@ -14,6 +14,13 @@
 		6108685F24DB438A0083AC41 /* Homework2.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 6108685D24DB438A0083AC41 /* Homework2.xcdatamodeld */; };
 		6108686124DB438E0083AC41 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6108686024DB438E0083AC41 /* Assets.xcassets */; };
 		6108686424DB438E0083AC41 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6108686224DB438E0083AC41 /* LaunchScreen.storyboard */; };
+<<<<<<< Updated upstream
+=======
+		6108686D24DB44C30083AC41 /* City+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6108686B24DB44C30083AC41 /* City+CoreDataClass.swift */; };
+		61E9410624DCC6C0008EF1B7 /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61E9410524DCC6C0008EF1B7 /* Model.swift */; };
+		61E9410824DCC6DC008EF1B7 /* City.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61E9410724DCC6DC008EF1B7 /* City.swift */; };
+		61E9410A24DCC6FB008EF1B7 /* City+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61E9410924DCC6FB008EF1B7 /* City+CoreDataClass.swift */; };
+>>>>>>> Stashed changes
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,6 +33,13 @@
 		6108686024DB438E0083AC41 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		6108686324DB438E0083AC41 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		6108686524DB438E0083AC41 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+<<<<<<< Updated upstream
+=======
+		6108686B24DB44C30083AC41 /* City+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "City+CoreDataClass.swift"; sourceTree = "<group>"; };
+		61E9410524DCC6C0008EF1B7 /* Model.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Model.swift; sourceTree = "<group>"; };
+		61E9410724DCC6DC008EF1B7 /* City.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = City.swift; sourceTree = "<group>"; };
+		61E9410924DCC6FB008EF1B7 /* City+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "City+CoreDataClass.swift"; sourceTree = "<group>"; };
+>>>>>>> Stashed changes
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,9 +72,16 @@
 		6108685324DB438A0083AC41 /* Homework2 */ = {
 			isa = PBXGroup;
 			children = (
+<<<<<<< Updated upstream
+=======
+				6108686B24DB44C30083AC41 /* City+CoreDataClass.swift */,
+				61E9410724DCC6DC008EF1B7 /* City.swift */,
+>>>>>>> Stashed changes
 				6108685424DB438A0083AC41 /* AppDelegate.swift */,
 				6108685624DB438A0083AC41 /* SceneDelegate.swift */,
 				6108685824DB438A0083AC41 /* ViewController.swift */,
+				61E9410524DCC6C0008EF1B7 /* Model.swift */,
+				61E9410924DCC6FB008EF1B7 /* City+CoreDataClass.swift */,
 				6108685A24DB438A0083AC41 /* Main.storyboard */,
 				6108686024DB438E0083AC41 /* Assets.xcassets */,
 				6108686224DB438E0083AC41 /* LaunchScreen.storyboard */,
@@ -141,10 +162,20 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+<<<<<<< Updated upstream
+=======
+				61E9410A24DCC6FB008EF1B7 /* City+CoreDataClass.swift in Sources */,
+>>>>>>> Stashed changes
 				6108685F24DB438A0083AC41 /* Homework2.xcdatamodeld in Sources */,
 				6108685924DB438A0083AC41 /* ViewController.swift in Sources */,
 				6108685524DB438A0083AC41 /* AppDelegate.swift in Sources */,
+				61E9410624DCC6C0008EF1B7 /* Model.swift in Sources */,
 				6108685724DB438A0083AC41 /* SceneDelegate.swift in Sources */,
+<<<<<<< Updated upstream
+=======
+				6108686D24DB44C30083AC41 /* City+CoreDataClass.swift in Sources */,
+				61E9410824DCC6DC008EF1B7 /* City.swift in Sources */,
+>>>>>>> Stashed changes
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
