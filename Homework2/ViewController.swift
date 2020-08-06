@@ -105,7 +105,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     // send data to Detail View using a segue when a table row is selected
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        <#code#>
+        //
     }
     
     
