@@ -41,7 +41,21 @@
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
-                    <navigationItem key="navigationItem" id="JGI-yu-2l3"/>
+                    <navigationItem key="navigationItem" id="JGI-yu-2l3">
+                        <barButtonItem key="leftBarButtonItem" systemItem="trash" id="YIp-i3-0Pj">
+                            <connections>
+                                <action selector="deleteCity:" destination="BYZ-38-t0r" id="vHP-uc-SOG"/>
+                            </connections>
+                        </barButtonItem>
+                        <barButtonItem key="rightBarButtonItem" systemItem="add" id="fgf-YB-mTd">
+                            <connections>
+                                <action selector="addCity:" destination="BYZ-38-t0r" id="wed-fV-lG1"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="cityTable" destination="Fin-LV-0Zd" id="hyw-RD-zGj"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>

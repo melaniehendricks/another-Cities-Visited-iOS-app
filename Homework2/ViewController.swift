@@ -14,8 +14,8 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     // declare variables
     let sections = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P",
                     "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]
-    
-    
+    var pickerView = UIPickerView()
+    @IBOutlet weak var cityTable: UITableView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -59,5 +59,56 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     }
     
     
-}
+    // allows user to edit a row 
+    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        return true
+    }
+    
+    
+    // make cells bigger
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 80
+    }
+    
+    
+    //
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        self.cityTable.reloadRows(at: [indexPath], with: .fade)
+    }
+    
+    
+    
+    // MARK: - Add City
+    
+    @IBAction func addCity(_ sender: Any) {
+        
+        // 2 text fields + UI ImagePicker
+        
+    }
+    
+    
+    
+    
+    
+    // MARK: - Delete City
+    
+    @IBAction func deleteCity(_ sender: Any) {
+        
+        // UI PickerView
+        
+        
+    }
+    
+    
+    
+    // MARK: - Other functions
+    
+    // send data to Detail View using a segue when a table row is selected
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        <#code#>
+    }
+    
+    
+    
+} // end of ViewController class
 
