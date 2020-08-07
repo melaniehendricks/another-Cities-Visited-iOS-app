@@ -9,13 +9,22 @@
 import UIKit
 import CoreData
 
-class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIPickerViewDataSource, UIPickerViewDelegate{
+
 
     // declare variables
     let sections = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P",
                     "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]
     var pickerView = UIPickerView()
     @IBOutlet weak var cityTable: UITableView!
+    
+    let selectedPhoto = UIImageView()
+    var cityName:String = ""
+    var cityDesc:String = ""
+    var toDelete:City?
+    var typeValue:String?
+    
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -76,6 +85,32 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         self.cityTable.reloadRows(at: [indexPath], with: .fade)
     }
     
+    
+    // MARK: - Delete PickerView methods
+    
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        // let count = self.m?.getCount()
+        // return count!
+        return 1
+    }
+    
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        return 1
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        // let city = self.m?.getCityObject(index: row)
+        // let title = city?.name
+        // return title
+        return ""
+    }
+    
+    
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        // set typeValue to name of city
+        // let city = self.m?.getCityObject(index: row)
+        // typeValue = city?.name 
+    }
     
     
     // MARK: - Add City
