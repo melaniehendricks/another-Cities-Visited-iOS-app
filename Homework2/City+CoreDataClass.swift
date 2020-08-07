@@ -12,4 +12,10 @@ import CoreData
 
 public class City: NSManagedObject {
 
+    
+    @NSManaged public var name: String?
+    @NSManaged public var desc: String?
+    @NSManaged public var picture: Data?
+
+    
 }
