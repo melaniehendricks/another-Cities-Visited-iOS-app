@@ -206,15 +206,47 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     
     
-    
-    
     // MARK: - Delete City
     
     @IBAction func deleteCity(_ sender: Any) {
         
-        // UI PickerView
+        let alert = UIAlertController(title: "Delete City", message: "\n\n\n\n\n\n", preferredStyle: .alert)
+        
+        alert.isModalInPresentation = true
+        let pickerFrame = UIPickerView(frame: CGRect(x: 5, y: 20, width: 250, height: 140))
+        alert.view.addSubview(pickerFrame)
+        pickerFrame.dataSource = self
+        pickerFrame.delegate = self
+        
+        // delete action
+        let deleteAction = UIAlertAction(title: "Delete", style: .default){
+            action in
+            
+            // var count = self.m?.getCount()
+            // print(count)
+            // self.m?.deleteCity(name: self.typeValue!)
+            self.cityTable.reloadData()
+            // print(count)
+        }
         
         
+        // delete all action
+        let deleteAll = UIAlertAction(title: "Delete All", style: .default){
+            action in
+            
+            // self.m?.deleteAll()
+            // let count = self.m?.getCount()
+            self.cityTable.reloadData()
+            // print(count)
+        }
+        
+        // add actions to Alert Controller object
+        alert.addAction(deleteAction)
+        alert.addAction(deleteAll)
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+        
+        // make visible
+        self.present(alert, animated: true)
     }
     
     
