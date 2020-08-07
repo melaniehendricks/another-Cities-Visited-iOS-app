@@ -24,11 +24,15 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     var toDelete:City?
     var typeValue:String?
     
+    // getting a handler to the CoreData managed object context
+    let managedObjectContext = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+    var m:Model?
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
+        m = Model(context: managedObjectContext)
+        
     }
 
     
@@ -248,6 +252,35 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         // make visible
         self.present(alert, animated: true)
     }
+    
+    
+    // MARK: - Image Picker Controller Delegates + Helper functions
+    
+    // load info about image into info object
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        let info = convertFromUIImagePickerControllerInfoKeyDictionary(info)
+        
+        // dismiss view that shows camera or photo library
+        picker.dismiss(animated: true, completion: nil)
+        
+        // create image object based on picture taken or photo selected
+        selectedPhoto.image = info[convertFromUIImagePickerControllerInfoKey(UIImagePickerController.InfoKey.originalImage)] as? UIImage
+        
+        // call addCity function in Model
+        // COME BACK TO THIS! 
+        
+        
+    }
+    
+    
+    fileprivate func convertFromUIImagePickerControllerInfoKeyDictionary(_ input: [UIImagePickerController.InfoKey: Any]) -> [String:Any]{
+        return Dictionary(uniqueKeysWithValues: input.map {key, value in (key.rawValue, value)})
+    }
+    
+    fileprivate func convertFromUIImagePickerControllerInfoKey(_ input: UIImagePickerController.InfoKey) -> String{
+        return input.rawValue
+    }
+    
     
     
     

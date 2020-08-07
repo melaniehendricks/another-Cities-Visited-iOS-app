@@ -10,4 +10,14 @@ import Foundation
 import CoreData
 public class Model{
     
+    // create
+    let managedObjectContext: NSManagedObjectContext?
+    
+    init(context: NSManagedObjectContext){
+        
+        // getting a handler to the CoreData managed object context
+        managedObjectContext = context
+    }
+    
+    
 }
