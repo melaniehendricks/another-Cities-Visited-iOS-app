@@ -109,7 +109,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         // set typeValue to name of city
         // let city = self.m?.getCityObject(index: row)
-        // typeValue = city?.name 
+        // typeValue = city?.name
     }
     
     
@@ -118,6 +118,89 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     @IBAction func addCity(_ sender: Any) {
         
         // 2 text fields + UI ImagePicker
+        let alert = UIAlertController(title: "Add City", message: nil, preferredStyle: .alert)
+        
+        // CANCEL
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel){
+            action in
+            
+            let firstText = alert.textFields![0] as UITextField
+            let secondText = alert.textFields![1] as UITextField
+            
+            if let x = firstText.text, let y = secondText.text{
+                print(firstText.text)
+                print(secondText.text)
+                
+                self.cityName = x
+                self.cityDesc = y
+            }
+        }
+        
+        // TEXT FIELDS
+        alert.addTextField(configurationHandler: { textField in
+            textField.placeholder = "Enter the name of the city here"})
+        alert.addTextField(configurationHandler: { textField in
+            textField.placeholder = "Enter the city's description here"})
+        
+        // CAMERA
+        let cameraAction = UIAlertAction(title: "Camera", style: .default){
+            action in
+            
+            // check if there is a camera available for application
+            if UIImagePickerController.isSourceTypeAvailable(.camera){
+                self.cityName = alert.textFields!.first!.text!
+                self.cityDesc = alert.textFields!.last!.text!
+                let picker = UIImagePickerController()
+                picker.delegate = self
+                picker.allowsEditing = false
+                
+                // source is camera
+                picker.sourceType = UIImagePickerController.SourceType.camera
+                
+                // photo mode (vs video mode)
+                picker.cameraCaptureMode = .photo
+                
+                // can view full image
+                picker.modalPresentationStyle = .fullScreen
+                
+                // load camera view
+                self.present(picker, animated: true, completion: nil)
+                
+            }else{
+                print("No camera")
+            }
+        }
+        
+        // PHOTO LIBRARY
+        let libAction = UIAlertAction(title: "Photo Library", style: .default){
+            action in
+            self.cityName = alert.textFields!.first!.text!
+            self.cityDesc = alert.textFields!.last!.text!
+            let picker = UIImagePickerController()
+            picker.delegate = self
+            picker.allowsEditing = false
+            
+            // source is photo library
+            picker.sourceType = .photoLibrary
+            
+            // load available photo library UI
+            picker.mediaTypes = UIImagePickerController.availableMediaTypes(for: .photoLibrary)!
+            
+            // style
+            picker.modalPresentationStyle = .popover
+            
+            // load photo library
+            self.present(picker, animated: true, completion: nil)
+            
+        }
+        
+    
+        // add actions to Alert Controller object
+        alert.addAction(cancelAction)
+        alert.addAction(cameraAction)
+        alert.addAction(libAction)
+        
+        self.present(alert, animated: true)
         
     }
     
