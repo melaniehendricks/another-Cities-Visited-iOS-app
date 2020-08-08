@@ -32,8 +32,19 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     override func viewDidLoad() {
         super.viewDidLoad()
         m = Model(context: managedObjectContext)
+        updateView()
         
     }
+    
+    private func updateView(){
+        let hasCities = m!.getCount() > 0
+        cityTable.isHidden = !hasCities
+    }
+    
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+    }
+    
 
     
     // MARK: - TableView functions
@@ -51,17 +62,33 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     // determine rows for each section
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
-        // model.getCount()
-        
-        return 1
+        let c = m?.getCount()
+        return c!
     }
     
     // put data into each row based on the section
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "myCell", for: indexPath)
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "myCell", for: indexPath) as? CityTableViewCell else{
+            fatalError("Unexpected Index Path")
+        }
+        cell.layer.borderWidth = 0.9
         
-        //
-        // cell.textLabel?.text = self...
+        // fetch city
+        let cityItem = m?.getCityObject(index: indexPath.row)
+        cell.cityTitle.text = cityItem?.name
+        
+        if cityItem?.picture != nil{
+            
+            // saved as Data in CoreData
+            // need to convert from Data to UIImage
+            let imageData:UIImage = UIImage(data: cityItem!.picture!)!
+            cell.cityImage.image = imageData
+            cell.cityImage.isHidden = false
+        }else{
+            cell.cityImage.image = UIImage(named: "placeholder")
+            
+        }
+        
         return cell
     }
     
