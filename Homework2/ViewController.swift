@@ -32,15 +32,19 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     override func viewDidLoad() {
         super.viewDidLoad()
         m = Model(context: managedObjectContext)
-        updateView()
+        //updateView()
+        
+        // create dictionary with section headers as a key and city object as a value
         
     }
     
+    /*
     private func updateView(){
         let hasCities = m!.getCount() > 0
         cityTable.isHidden = !hasCities
     }
-    
+ */
+ 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
@@ -56,14 +60,21 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     // create section heads
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        // return heading for each section
+        
+        
         return self.sections[section]
     }
     
     // determine rows for each section
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        // return number of rows in the section
+        // get the section title
         
-        let c = m?.getCount()
-        return c!
+        // use the section title to count how many cities are in that section
+        
+        
+        return 1
     }
     
     // put data into each row based on the section
@@ -71,7 +82,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "myCell", for: indexPath) as? CityTableViewCell else{
             fatalError("Unexpected Index Path")
         }
-        cell.layer.borderWidth = 0.9
+        //cell.layer.borderWidth = 0.9
         
         // fetch city
         let cityItem = m?.getCityObject(index: indexPath.row)
@@ -81,11 +92,15 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             
             // saved as Data in CoreData
             // need to convert from Data to UIImage
-            let imageData:UIImage = UIImage(data: cityItem!.picture!)!
+            let imageData: UIImage = UIImage(data: cityItem!.picture!)!
             cell.cityImage.image = imageData
             cell.cityImage.isHidden = false
         }else{
-            cell.cityImage.image = UIImage(named: "placeholder")
+            // cell.cityImage.image = #imageLiteral then pick placeholder.png
+            // OR
+            // cell.cityImage.image = UIImage(named: "placeholder")
+            cell.cityImage.image = #imageLiteral(resourceName: "placeholder")
+            print(cityItem.self)
             
         }
         
@@ -95,7 +110,9 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
 
     // returns the section index that the tableView should jump to when a user taps a particular index
     func tableView(_ tableView: UITableView, sectionForSectionIndexTitle title: String, at index: Int) -> Int {
-        return 0
+        //
+        let temp = sections as NSArray
+        return temp.index(of: title)
     }
     
     

@@ -8,10 +8,10 @@
 
 import Foundation
 import CoreData
-public class Model{
+class Model{
     
-    // create
     let managedObjectContext: NSManagedObjectContext?
+    var cityList = [String:[City]]()
     
     init(context: NSManagedObjectContext){
         
@@ -19,6 +19,56 @@ public class Model{
         managedObjectContext = context
     }
     
+    
+    // MARK: - TableView helper functions
+    
+    func createCityDictionary()
+    {
+        
+        // fetch
+        let records = fetch()
+        for City in records{
+            
+            // extract first letter as a string for the key
+            let city = City.name!
+            let endIndex = city.index((city.startIndex), offsetBy: 1)
+            let cityKey = String(city[(..<endIndex)])
+            
+            // if cityList[cityKey] returns a value (cityKey already exists),
+            // assign it to cityObjects and group City with other cities
+            if var cityObjects = cityList[cityKey]{
+                cityObjects.append(City)
+                
+                // then all cities have same key (first letter)
+                cityList[cityKey] = cityObjects
+                
+                // otherwise, create a new key-value pair with first letter & City
+            }else{
+                cityList[cityKey] = [City]
+            }
+        }
+    }
+    
+    
+    // count the number of values (Cities) for the given key
+    func getSectionCount(key: String) -> Int?
+    {
+        return cityList[key]?.count
+    }
+    
+    
+    func getCityObjectForRow(key: String, index: Int) -> City?
+    {
+        // if there are 1+ cities for a letter/key,
+        // assign them to cityValues
+        if let cityValues = cityList[key]{
+            
+            // return city at specified index 
+            return cityValues[index]
+        }else{
+            return nil
+        }
+    }
     
     // MARK: - ADD CITY
     func addCity(name:String, desc:String, photo:Data){
