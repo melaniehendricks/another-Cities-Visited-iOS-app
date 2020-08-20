@@ -8,16 +8,78 @@
 
 import Foundation
 import CoreData
-public class Model{
+class Model{
     
-    // create
     let managedObjectContext: NSManagedObjectContext?
+    var cityList = [String:[City]]()
     
     init(context: NSManagedObjectContext){
         
         // getting a handler to the CoreData managed object context
         managedObjectContext = context
     }
+    
+    
+    // MARK: - TableView helper functions
+    
+    func createCityDictionary()
+    {
+        
+        // fetch
+        let records = fetch()
+        
+        for City in records{
+            
+            // extract first letter as a string for the key
+            let city = City.name!
+            let cityKey = getCityKey(name: city)
+            
+            // if cityList[cityKey] returns a value (cityKey already exists),
+            // assign it to cityObjects and group City with other cities
+            if var cityObjects = cityList[cityKey]{
+                cityObjects.append(City)
+                
+                // then all cities have same key (first letter)
+                cityList[cityKey] = cityObjects
+                
+                print(cityList[cityKey])
+                
+                // otherwise, create a new key-value pair with first letter & City
+            }else{
+                cityList[cityKey] = [City]
+                print(cityList[cityKey])
+            }
+        }
+    }
+    
+    
+    // count the number of values (Cities) for the given key
+    func getSectionCount(key: String) -> Int?
+    {
+        return cityList[key]?.count
+    }
+    
+    
+    func getCityObjectForRow(key: String, index: Int) -> City?
+    {
+        // if there are 1+ cities for a letter/key,
+        // assign them to cityValues
+        if let cityValues = cityList[key]{
+            
+            // return city at specified index 
+            return cityValues[index]
+        }else{
+            return nil
+        }
+    }
+    
+    // MARK: - GET CITY KEY
+    func getCityKey(name:String) -> String{
+        let endIndex = name.index((name.startIndex), offsetBy: 1)
+        let cityKey = String(name[(..<endIndex)])
+        return cityKey
+    }
+    
     
     
     // MARK: - ADD CITY
@@ -33,6 +95,23 @@ public class Model{
         city.name = name
         city.desc = desc
         city.picture = photo
+        
+        // get key
+        let key = getCityKey(name: name)
+        
+        // insert into cityList for getSectionCount to reference
+        if var cityObjects = cityList[key]{
+        cityObjects.append(city)
+        
+        // then all cities have same key (first letter)
+        cityList[key] = cityObjects
+        
+            print(cityList[key])
+        }else{
+            cityList[key] = [city]
+            print(cityList[key])
+        }
+        
         
         // save new entity
         do{
@@ -61,7 +140,7 @@ public class Model{
         request.entity = ent
         
         // build search request predicate (query)
-        let pred = NSPredicate(format: "(name == %@", name)
+        let pred = NSPredicate(format: "(name == %@)", name)
         request.predicate = pred
         
         // perform the query and process the query results
@@ -105,9 +184,29 @@ public class Model{
     
     // MARK: - FETCH CITY + DELETE CITY
     func deleteCity(name:String)-> Int{
+        
+        // delete City in CoreData
         let city = name
         let match:NSManagedObject = query(name: city)
         managedObjectContext?.delete(match)
+        
+        // get key
+        let key = self.getCityKey(name: name)
+        var index:Int = 0
+        
+        // delete City in cityList for TableView functions to reference
+        if var cityArrayAtKey = cityList[key]{
+            for city in cityArrayAtKey{
+                if city.name! == name{
+                    cityList[key]!.remove(at: index)
+                    print(cityList[key])
+                    break
+                }else{
+                    index += 1
+                }
+            }
+        }
+        
         return 0
     }
         
@@ -122,6 +221,7 @@ public class Model{
         do{
             try managedObjectContext!.execute(deleteRequest)
             try managedObjectContext!.save()
+            cityList.removeAll()
         }catch let error{
             print(error.localizedDescription)
         }
