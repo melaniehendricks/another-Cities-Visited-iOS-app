@@ -10,10 +10,29 @@ import UIKit
 
 class DetailViewController: UIViewController {
 
+    // declare variables
+    @IBOutlet weak var cityName: UILabel!
+    @IBOutlet weak var cityImage: UIImageView!
+    @IBOutlet weak var cityDesc: UITextView!
+    
+    var name:String?
+    var image:Data?
+    var desc:String?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Do any additional setup after loading the view.
+        self.cityName.text = name
+        self.cityDesc.text = desc
+        
+        // saved in CoreData as Data
+        // need to convert to UIImage
+        if image == nil{
+            self.cityImage.image = #imageLiteral(resourceName: "placeholder")
+        }else{
+            let imageData: UIImage = UIImage(data: image!)!
+            self.cityImage.image = imageData
+        }
     }
     
 

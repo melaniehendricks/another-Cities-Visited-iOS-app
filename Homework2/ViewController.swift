@@ -23,6 +23,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     var cityDesc:String = ""
     var toDelete:City?
     var typeValue:String?
+    var index:IndexPath?
     
     // getting a handler to the CoreData managed object context
     let managedObjectContext = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
@@ -32,18 +33,12 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     override func viewDidLoad() {
         super.viewDidLoad()
         m = Model(context: managedObjectContext)
-        //updateView()
-        
+        let cities = m?.fetch()
+
         // create dictionary with section headers as a key and city object as a value
-        
+        m?.createCityDictionary()
     }
     
-    /*
-    private func updateView(){
-        let hasCities = m!.getCount() > 0
-        cityTable.isHidden = !hasCities
-    }
- */
  
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
@@ -58,88 +53,98 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         return sections.count
     }
     
+    
+    // determine rows for each section
+       func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+           // return number of rows in the section
+           // get the section title
+           let cityKey = self.sections[section]
+           
+           // use the section title to count how many cities are in that section
+           if let count = m?.getSectionCount(key: cityKey){
+               return count
+           }else{
+               return 0
+           }
+       }
+    
+    
     // create section heads
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        
         // return heading for each section
-        
-        
         return self.sections[section]
     }
     
-    // determine rows for each section
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        // return number of rows in the section
-        // get the section title
-        
-        // use the section title to count how many cities are in that section
-        
-        
-        return 1
-    }
+   
     
-    // put data into each row based on the section
+    // put data into each row based in the section
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: "myCell", for: indexPath) as? CityTableViewCell else{
-            fatalError("Unexpected Index Path")
-        }
+        let cell = tableView.dequeueReusableCell(withIdentifier: "myCell", for: indexPath) as! CityTableViewCell
         //cell.layer.borderWidth = 0.9
-        
-        // fetch city
-        let cityItem = m?.getCityObject(index: indexPath.row)
-        cell.cityTitle.text = cityItem?.name
-        
-        if cityItem?.picture != nil{
             
-            // saved as Data in CoreData
+        // fetch key
+        let cityKey = sections[indexPath.section]
+        
+        // if key + values exist, return City at specified index
+        if let city = m?.getCityObjectForRow(key: cityKey, index: indexPath.row){
+            
+            // set City name
+            cell.cityTitle.text = city.name!
+            
+            // picture saved as Data in CoreData
             // need to convert from Data to UIImage
-            let imageData: UIImage = UIImage(data: cityItem!.picture!)!
+            let imageData:UIImage = UIImage(data: city.picture!)!
             cell.cityImage.image = imageData
             cell.cityImage.isHidden = false
-        }else{
-            // cell.cityImage.image = #imageLiteral then pick placeholder.png
-            // OR
-            // cell.cityImage.image = UIImage(named: "placeholder")
-            cell.cityImage.image = #imageLiteral(resourceName: "placeholder")
-            print(cityItem.self)
-            
         }
-        
+           
         return cell
     }
     
-
+    /*
+    func tableView(tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete{
+            
+        }
+    }
+*/
+    /*
     // returns the section index that the tableView should jump to when a user taps a particular index
     func tableView(_ tableView: UITableView, sectionForSectionIndexTitle title: String, at index: Int) -> Int {
         //
         let temp = sections as NSArray
         return temp.index(of: title)
     }
-    
+  */
     
     // allows user to edit a row 
     func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        self.cityTable.allowsSelectionDuringEditing = true
         return true
     }
+ 
     
     
     // make cells bigger
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 80
+        return 70
     }
     
-    
+
     //
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         self.cityTable.reloadRows(at: [indexPath], with: .fade)
     }
     
     
+    
+    
     // MARK: - Delete PickerView methods
     
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        // let count = self.m?.getCount()
-        // return count!
-        return 1
+        let count = self.m?.getCount()
+        return count!
     }
     
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
@@ -147,17 +152,16 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     }
     
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        // let city = self.m?.getCityObject(index: row)
-        // let title = city?.name
-        // return title
-        return ""
+        let city = self.m?.getCityObject(index: row)
+        let title = city?.name
+        return title
     }
     
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         // set typeValue to name of city
-        // let city = self.m?.getCityObject(index: row)
-        // typeValue = city?.name
+        let city = self.m?.getCityObject(index: row)
+        self.typeValue = city?.name
     }
     
     
@@ -239,7 +243,6 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             
             // load photo library
             self.present(picker, animated: true, completion: nil)
-            
         }
         
     
@@ -249,7 +252,6 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         alert.addAction(libAction)
         
         self.present(alert, animated: true)
-        
     }
     
     
@@ -270,11 +272,16 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         let deleteAction = UIAlertAction(title: "Delete", style: .default){
             action in
             
-            // var count = self.m?.getCount()
-            // print(count)
-            // self.m?.deleteCity(name: self.typeValue!)
+            var countBefore = self.m?.getCount()
+            print(countBefore)
+            self.m?.deleteCity(name: self.typeValue!)
+            
+            print(self.cityTable.hasUncommittedUpdates)
+            
             self.cityTable.reloadData()
-            // print(count)
+            //self.updateView()
+            var countAfter = self.m?.getCount()
+            print(countAfter)
         }
         
         
@@ -282,10 +289,11 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         let deleteAll = UIAlertAction(title: "Delete All", style: .default){
             action in
             
-            // self.m?.deleteAll()
-            // let count = self.m?.getCount()
+            self.m?.deleteAll()
+            let count = self.m?.getCount()
+           // self.updateView()
             self.cityTable.reloadData()
-            // print(count)
+            print(count)
         }
         
         // add actions to Alert Controller object
@@ -310,9 +318,20 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         // create image object based on picture taken or photo selected
         selectedPhoto.image = info[convertFromUIImagePickerControllerInfoKey(UIImagePickerController.InfoKey.originalImage)] as? UIImage
         
-        // call addCity function in Model
-        // COME BACK TO THIS! 
+        let beforeCount = self.m?.getCount()
+        print(beforeCount)
         
+        
+        
+        // call addCity function in Model
+        self.m?.addCity(name: cityName, desc: cityDesc, photo: self.selectedPhoto.image!.jpegData(compressionQuality: 0.9)!)
+
+        // reload TableView
+        self.cityTable.reloadData()
+        
+        let totalCount = self.m?.getCount()
+        
+        print("cities saved: ", totalCount!)
         
     }
     
@@ -333,6 +352,22 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     // send data to Detail View using a segue when a table row is selected
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         //
+        let selectedIndex: IndexPath = self.cityTable.indexPath(for: sender as! UITableViewCell)!
+        let cityKey = sections[selectedIndex.section]
+        
+        // get the city object for the selected row in the section
+        let city = self.m?.getCityObjectForRow(key: cityKey, index: selectedIndex.row)
+        
+        
+        // if segue identifier is "toDetailView"
+        // pass selected city to DetailViewController
+        if(segue.identifier == "toDetailView"){
+            if let viewController:DetailViewController = segue.destination as? DetailViewController{
+                viewController.name = city!.name
+                viewController.desc = city!.desc
+                viewController.image = city!.picture
+            }
+        }
     }
     
     
