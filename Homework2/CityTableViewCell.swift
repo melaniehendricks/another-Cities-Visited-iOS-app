@@ -14,7 +14,6 @@ class CityTableViewCell: UITableViewCell {
     @IBOutlet weak var cityTitle: UILabel!
     @IBOutlet weak var cityImage: UIImageView!{
         didSet{
-            //cityImage.layer.cornerRadius = cityImage.bounds.height / 4
             cityImage.frame = CGRect(x: 20, y: -15, width: 100, height: 100)
             cityImage.clipsToBounds = true
         }
