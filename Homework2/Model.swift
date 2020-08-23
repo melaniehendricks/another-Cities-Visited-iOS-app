@@ -174,7 +174,7 @@ class Model{
     
     
     
-    // MARK: - GET CITY OBJECT
+    // MARK: - GET CITY OBJECT (pickerView helper function)
     func getCityObject(index:Int) -> City{
         var cities = fetch()
         let target = cities[index]
@@ -252,5 +252,21 @@ class Model{
         return iCount!
     }
     
+
+    // MARK: - EDIT CITY
+    func editCityDesc(cityName:String, cityDesc:String){
+        
+        // get City object and set new values
+        let match = query(name: cityName)
+        match.setValue(cityDesc, forKey: "desc")
+    }
+    
+    
+    func editCityPicture(cityName:String, cityImage:Data){
+        
+        // get City object and set new photo
+        let match = query(name: cityName)
+        match.setValue(cityImage, forKey: "picture")
+    }
     
 }
