@@ -62,18 +62,11 @@
                                 <action selector="deleteCity:" destination="BYZ-38-t0r" id="vHP-uc-SOG"/>
                             </connections>
                         </barButtonItem>
-                        <rightBarButtonItems>
-                            <barButtonItem systemItem="add" id="fgf-YB-mTd">
-                                <connections>
-                                    <action selector="addCity:" destination="BYZ-38-t0r" id="wed-fV-lG1"/>
-                                </connections>
-                            </barButtonItem>
-                            <barButtonItem systemItem="edit" id="c0D-JS-kGJ">
-                                <connections>
-                                    <action selector="editCity:" destination="BYZ-38-t0r" id="xEr-Yj-9tT"/>
-                                </connections>
-                            </barButtonItem>
-                        </rightBarButtonItems>
+                        <barButtonItem key="rightBarButtonItem" systemItem="add" id="fgf-YB-mTd">
+                            <connections>
+                                <action selector="addCity:" destination="BYZ-38-t0r" id="wed-fV-lG1"/>
+                            </connections>
+                        </barButtonItem>
                     </navigationItem>
                     <connections>
                         <outlet property="cityTable" destination="Fin-LV-0Zd" id="hyw-RD-zGj"/>

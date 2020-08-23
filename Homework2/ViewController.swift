@@ -25,6 +25,10 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     var typeValue:String?
     var index:IndexPath?
     
+    // if true, adding photo.
+    // if false, editing photo.
+    var addingPhoto:Bool?
+    
     // getting a handler to the CoreData managed object context
     let managedObjectContext = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     var m:Model?
@@ -150,7 +154,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     // MARK: - EDIT SWIPE FUNCTION
     
     func edit(_ message:String, index:IndexPath){
-        let alert = UIAlertController(title: "Edit Row Entry", message: nil, preferredStyle: .alert)
+        let alert = UIAlertController(title: "Edit Row Entry", message: "Change city's description or picture", preferredStyle: .alert)
         
         // get City
         let cityKey = sections[index.section]
@@ -162,7 +166,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             textField.placeholder = "Enter city's new description here."
             }
         
-        alert.addAction(UIAlertAction(title: "Save", style: .default, handler: { action in
+        alert.addAction(UIAlertAction(title: "Save Description", style: .default, handler: { action in
             
             var newDesc:String?
             let userInput = alert.textFields![0] as UITextField
@@ -170,10 +174,80 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                 newDesc = text
                 self.m?.editCityDesc(cityName: city!.name!, cityDesc: newDesc!)
             }
-            
-            
         }))
+        
+        
+        // CAMERA
+        let cameraAction = UIAlertAction(title: "Camera", style: .default){
+            action in
+            
+            // check if there is a camera available for application
+            if UIImagePickerController.isSourceTypeAvailable(.camera){
+                self.cityName = alert.textFields!.first!.text!
+                
+                let userInput = alert.textFields![0] as UITextField
+                if let text = userInput.text{
+                    self.cityDesc = text
+                }else{
+                    self.cityDesc = city!.desc!
+                }
+                
+                self.addingPhoto = false
+                let picker = UIImagePickerController()
+                picker.delegate = self
+                picker.allowsEditing = false
+                
+                // source is camera
+                picker.sourceType = UIImagePickerController.SourceType.camera
+                
+                // photo mode (vs video mode)
+                picker.cameraCaptureMode = .photo
+                
+                // can view full image
+                picker.modalPresentationStyle = .fullScreen
+                
+                // load camera view
+                self.present(picker, animated: true, completion: nil)
+                
+            }else{
+                print("No camera")
+            }
+        }
+        
+        // PHOTO LIBRARY
+        let libAction = UIAlertAction(title: "Photo Library", style: .default){
+            action in
+            self.cityName = city!.name!
+            
+            let userInput = alert.textFields![0] as UITextField
+            if let text = userInput.text{
+                self.cityDesc = text
+            }else{
+                self.cityDesc = city!.desc!
+            }
+            
+            self.addingPhoto = false
+            let picker = UIImagePickerController()
+            picker.delegate = self
+            picker.allowsEditing = false
+            
+            // source is photo library
+            picker.sourceType = .photoLibrary
+            
+            // load available photo library UI
+            picker.mediaTypes = UIImagePickerController.availableMediaTypes(for: .photoLibrary)!
+            
+            // style
+            picker.modalPresentationStyle = .popover
+            
+            // load photo library
+            self.present(picker, animated: true, completion: nil)
+        }
+        
+        
         alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+        alert.addAction(cameraAction)
+        alert.addAction(libAction)
         self.present(alert, animated: true)
     }
     
@@ -259,7 +333,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     @IBAction func addCity(_ sender: Any) {
         
         // 2 text fields + UI ImagePicker
-        let alert = UIAlertController(title: "Add City", message: nil, preferredStyle: .alert)
+        let alert = UIAlertController(title: "Add City", message: "Enter city's name and description, then add a photo.", preferredStyle: .alert)
         
         // CANCEL
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel){
@@ -279,9 +353,9 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         
         // TEXT FIELDS
         alert.addTextField(configurationHandler: { textField in
-            textField.placeholder = "Enter the name of the city here"})
+            textField.placeholder = "Name of city"})
         alert.addTextField(configurationHandler: { textField in
-            textField.placeholder = "Enter the city's description here"})
+            textField.placeholder = "Description of city "})
         
         // CAMERA
         let cameraAction = UIAlertAction(title: "Camera", style: .default){
@@ -291,6 +365,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             if UIImagePickerController.isSourceTypeAvailable(.camera){
                 self.cityName = alert.textFields!.first!.text!
                 self.cityDesc = alert.textFields!.last!.text!
+                self.addingPhoto = true
                 let picker = UIImagePickerController()
                 picker.delegate = self
                 picker.allowsEditing = false
@@ -317,6 +392,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             action in
             self.cityName = alert.textFields!.first!.text!
             self.cityDesc = alert.textFields!.last!.text!
+            self.addingPhoto = true
             let picker = UIImagePickerController()
             picker.delegate = self
             picker.allowsEditing = false
@@ -357,21 +433,32 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         // create image object based on picture taken or photo selected
         selectedPhoto.image = info[convertFromUIImagePickerControllerInfoKey(UIImagePickerController.InfoKey.originalImage)] as? UIImage
         
-        // IDEA: 2 cases - one for addCity and one for editCity (global variable changed to match)
+        //2 cases: one for addCity and one for editCity (global variable changed to match)
+        let addOrEdit = self.addingPhoto
         
-        let beforeCount = self.m?.getCount()
-        print(beforeCount)
+        switch addOrEdit{
         
-        // call addCity function in Model
-        self.m?.addCity(name: cityName, desc: cityDesc, photo: self.selectedPhoto.image!.jpegData(compressionQuality: 0.9)!)
+        // case for addCity
+        case true :
+            let beforeCount = self.m?.getCount()
+            print(beforeCount)
+            
+            // call addCity function in Model
+            self.m?.addCity(name: cityName, desc: cityDesc, photo: self.selectedPhoto.image!.jpegData(compressionQuality: 0.9)!)
 
-        // reload TableView
-        self.cityTable.reloadData()
+            // reload TableView
+            self.cityTable.reloadData()
+            
+            let totalCount = self.m?.getCount()
+            
+            print("cities saved: ", totalCount!)
         
-        let totalCount = self.m?.getCount()
-        
-        print("cities saved: ", totalCount!)
-        
+        // case for editCityPicture
+        case false:
+            self.m?.editCityPicture(cityName: cityName, cityImage: self.selectedPhoto.image!.jpegData(compressionQuality: 0.9)!)
+        default:
+            print("default case")
+        }
     }
     
     
