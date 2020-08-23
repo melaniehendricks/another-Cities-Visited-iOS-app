@@ -46,7 +46,44 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
 
     
-    // MARK: - TableView functions
+    // MARK: - TABLEVIEW DELEGATE METHODS
+    
+    // tells delegate a row is selected
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        self.cityTable.reloadRows(at: [indexPath], with: .fade)
+    }
+    
+    
+    // make cells bigger
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 70
+    }
+    
+    
+    // returns the swipe actions to display on the leading edge of the row
+    func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration?{
+        
+        // swipe action
+        let actionEdit = UIContextualAction(style: .normal, title: "Edit", handler: { (action, view, completionHandler) in
+            
+            self.edit("Edit Action", index: indexPath)
+            self.cityTable.reloadRows(at: [indexPath], with: .automatic)
+            completionHandler(true)
+        })
+        
+        // color of action after swipe
+        actionEdit.backgroundColor = .blue
+        
+        // return edit action
+        let configuration = UISwipeActionsConfiguration(actions: [actionEdit])
+        configuration.performsFirstActionWithFullSwipe = false
+        return configuration
+    }
+    
+    
+    
+    // MARK: - TABLEVIEW DATASOURCE METHODS
+    
     
     // number of sections
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -102,45 +139,97 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         return cell
     }
     
-    /*
-    func tableView(tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
-        if editingStyle == .delete{
-            
-        }
-    }
-*/
-    /*
-    // returns the section index that the tableView should jump to when a user taps a particular index
-    func tableView(_ tableView: UITableView, sectionForSectionIndexTitle title: String, at index: Int) -> Int {
-        //
-        let temp = sections as NSArray
-        return temp.index(of: title)
-    }
-  */
-    
+ 
     // allows user to edit a row 
     func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
         self.cityTable.allowsSelectionDuringEditing = true
         return true
     }
  
+ 
+    // MARK: - EDIT SWIPE FUNCTION
     
-    
-    // make cells bigger
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 70
+    func edit(_ message:String, index:IndexPath){
+        let alert = UIAlertController(title: "Edit Row Entry", message: nil, preferredStyle: .alert)
+        
+        // get City
+        let cityKey = sections[index.section]
+        let city = self.m?.getCityObjectForRow(key: cityKey, index: index.row)
+        
+        
+        // set textfield to current City description
+        alert.addTextField{ (textField: UITextField) in
+            textField.placeholder = "Enter city's new description here."
+            }
+        
+        alert.addAction(UIAlertAction(title: "Save", style: .default, handler: { action in
+            
+            var newDesc:String?
+            let userInput = alert.textFields![0] as UITextField
+            if let text = userInput.text{
+                newDesc = text
+                self.m?.editCityDesc(cityName: city!.name!, cityDesc: newDesc!)
+            }
+            
+            
+        }))
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+        self.present(alert, animated: true)
     }
     
-
-    //
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        self.cityTable.reloadRows(at: [indexPath], with: .fade)
-    }
+      
+      // MARK: - DELETE BUTTON
+      
+      @IBAction func deleteCity(_ sender: Any) {
+          
+          let alert = UIAlertController(title: "Delete City", message: "\n\n\n\n\n\n", preferredStyle: .alert)
+          
+          alert.isModalInPresentation = true
+          let pickerFrame = UIPickerView(frame: CGRect(x: 5, y: 20, width: 250, height: 140))
+          alert.view.addSubview(pickerFrame)
+          pickerFrame.dataSource = self
+          pickerFrame.delegate = self
+          
+          // delete action
+          let deleteAction = UIAlertAction(title: "Delete", style: .default){
+              action in
+              
+              var countBefore = self.m?.getCount()
+              print(countBefore)
+              self.m?.deleteCity(name: self.typeValue!)
+              
+              print(self.cityTable.hasUncommittedUpdates)
+              
+              self.cityTable.reloadData()
+              //self.updateView()
+              var countAfter = self.m?.getCount()
+              print(countAfter)
+          }
+          
+          
+          // delete all action
+          let deleteAll = UIAlertAction(title: "Delete All", style: .default){
+              action in
+              
+              self.m?.deleteAll()
+              let count = self.m?.getCount()
+             // self.updateView()
+              self.cityTable.reloadData()
+              print(count)
+          }
+          
+          // add actions to Alert Controller object
+          alert.addAction(deleteAction)
+          alert.addAction(deleteAll)
+          alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+          
+          // make visible
+          self.present(alert, animated: true)
+      }
     
     
     
-    
-    // MARK: - Delete PickerView methods
+    // MARK: - DELETE PICKERVIEW METHODS
     
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
         let count = self.m?.getCount()
@@ -165,7 +254,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     }
     
     
-    // MARK: - Add City
+    // MARK: - ADD BUTTON
     
     @IBAction func addCity(_ sender: Any) {
         
@@ -254,59 +343,9 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         self.present(alert, animated: true)
     }
     
+  
     
-    
-    // MARK: - Delete City
-    
-    @IBAction func deleteCity(_ sender: Any) {
-        
-        let alert = UIAlertController(title: "Delete City", message: "\n\n\n\n\n\n", preferredStyle: .alert)
-        
-        alert.isModalInPresentation = true
-        let pickerFrame = UIPickerView(frame: CGRect(x: 5, y: 20, width: 250, height: 140))
-        alert.view.addSubview(pickerFrame)
-        pickerFrame.dataSource = self
-        pickerFrame.delegate = self
-        
-        // delete action
-        let deleteAction = UIAlertAction(title: "Delete", style: .default){
-            action in
-            
-            var countBefore = self.m?.getCount()
-            print(countBefore)
-            self.m?.deleteCity(name: self.typeValue!)
-            
-            print(self.cityTable.hasUncommittedUpdates)
-            
-            self.cityTable.reloadData()
-            //self.updateView()
-            var countAfter = self.m?.getCount()
-            print(countAfter)
-        }
-        
-        
-        // delete all action
-        let deleteAll = UIAlertAction(title: "Delete All", style: .default){
-            action in
-            
-            self.m?.deleteAll()
-            let count = self.m?.getCount()
-           // self.updateView()
-            self.cityTable.reloadData()
-            print(count)
-        }
-        
-        // add actions to Alert Controller object
-        alert.addAction(deleteAction)
-        alert.addAction(deleteAll)
-        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
-        
-        // make visible
-        self.present(alert, animated: true)
-    }
-    
-    
-    // MARK: - Image Picker Controller Delegates + Helper functions
+    // MARK: - IMAGE PICKER CONTROLLER DELEGATES + HELPER FUNCTIONS
     
     // load info about image into info object
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
@@ -318,10 +357,10 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         // create image object based on picture taken or photo selected
         selectedPhoto.image = info[convertFromUIImagePickerControllerInfoKey(UIImagePickerController.InfoKey.originalImage)] as? UIImage
         
+        // IDEA: 2 cases - one for addCity and one for editCity (global variable changed to match)
+        
         let beforeCount = self.m?.getCount()
         print(beforeCount)
-        
-        
         
         // call addCity function in Model
         self.m?.addCity(name: cityName, desc: cityDesc, photo: self.selectedPhoto.image!.jpegData(compressionQuality: 0.9)!)
